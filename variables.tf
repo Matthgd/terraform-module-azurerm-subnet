@@ -1,22 +1,18 @@
 variable "location" {
-  description = "Location info and alias to resources deploy"
-  type = object({
-    name  = string
-    alias = string
-  })
+  type = string
 }
 
-variable "delegation" {
-  type  = list(object({
-  name  = string
-  }))
-}
-variable "service_delegation" {
-  type = list(object({
-    name              = string
-    actions           = string
-  }))
-}
+#variable "delegation" {
+#  type  = list(object({
+#  name  = string
+#  }))
+#}
+#variable "service_delegation" {
+#  type = list(object({
+#    name              = string
+#    actions           = string
+#  }))
+#}
 
 
 variable "virtual_network_name" {
@@ -37,4 +33,21 @@ variable "address_space" {
 variable "name" {
   description = "Subnet name"
   type        = string
+}
+
+variable "subnet_delegation" {
+  type = list(object({
+    name = string
+    subnet_delegation = list(object({
+      name    = string
+      actions = list(string)
+    }))
+  }))
+  default = []
+}
+
+variable "service_endpoints" {
+  description = "The list of Service endpoints to associate with the subnet"
+  type        = list(string)
+  default     = []
 }

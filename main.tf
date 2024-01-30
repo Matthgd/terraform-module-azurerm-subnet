@@ -4,25 +4,20 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.virtual_network_name
   address_prefixes     = var.address_space
-    dynamic "delegation_subnet" {
-        for_each = (var.delegation ==null ? {} : var.delegation)
+  
+    dynamic "delegation" {
+    for_each = { for delegation in var.subnet_delegation: delegation.name => delegation.subnet_delegation }
+    content {
+      name = delegation.key
+      dynamic "service_delegation" {
+        for_each ={ for delegations in delegation.value : delegations.name => delegations }
         content {
-           name =  delegation_subnet.value.name
+          name    = service_delegation.value.name
+          actions = service_delegation.value.actions
         }
+      }
     }
-    dynamic "service_delegation" {
-        for_each = (var.service_delegation ==null ? {} : var.service_delegation)
-        content {
-           name =  service_delegation.value.name
-           actions = service_delegation.value.actions
-        }
-    }
-  delegation {
-    name = delegation_subnet.value.name
-    service_delegation {
-      name    = service_delegation.value.name
-      actions = service_delegation.value.actions
-    }  
+  } 
 }
-  }
+  
 
